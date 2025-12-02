@@ -41,8 +41,8 @@ async def on_message(message):
     await bot.process_commands(message)
 
 # --- Voice join voor specifieke gebruiker ---
-TARGET_USER_ID = 1097126388236030083  # jouw target user ID
-MP3_FILE = "voorbeeld.mp3"  # ✅ bestand moet in je projectmap staan!
+TARGET_USER_ID = 1097126388236030083
+MP3_FILE = "voorbeeld.mp3"
 
 @bot.event
 async def on_voice_state_update(member, before, after):
@@ -51,14 +51,11 @@ async def on_voice_state_update(member, before, after):
 
     if before.channel is None and after.channel is not None:
         channel = after.channel
-
         voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+
         if voice_client is None:
             voice_client = await channel.connect()
 
-        print(f"Speelt MP3 af: {MP3_FILE}")
-
-        # ✅ GEEN executable pad meer (werkt op Railway)
         audio_source = discord.FFmpegPCMAudio(MP3_FILE, executable="ffmpeg")
 
         if not voice_client.is_playing():
@@ -93,6 +90,28 @@ async def leave(ctx):
     else:
         await ctx.send("Ik zit nergens in een voice channel.")
 
+# --- Nieuw: !dujardin command ---
+@bot.command()
+async def dujardin(ctx):
+    if ctx.author.voice is None:
+        await ctx.send("Ga eerst in een voice channel zitten!")
+        return
+
+    channel = ctx.author.voice.channel
+    voice_client = ctx.voice_client
+
+    if voice_client is None:
+        voice_client = await channel.connect()
+
+    audio = discord.FFmpegPCMAudio("dujardin.mp3", executable="ffmpeg")
+    voice_client.play(audio)
+
+    await ctx.send("🎧 *HEY DUJARDIN wordt afgespeeld...*")
+
+    while voice_client.is_playing():
+        await asyncio.sleep(1)
+
+    await voice_client.disconnect()
+
 # --- Run bot ---
 bot.run(TOKEN)
-
