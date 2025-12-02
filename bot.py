@@ -59,7 +59,7 @@ async def on_voice_state_update(member, before, after):
         print(f"Speelt MP3 af: {MP3_FILE}")
 
         # ✅ GEEN executable pad meer (werkt op Railway)
-        audio_source = discord.FFmpegPCMAudio(MP3_FILE)
+        audio_source = discord.FFmpegPCMAudio(MP3_FILE, executable="ffmpeg")
 
         if not voice_client.is_playing():
             voice_client.play(audio_source)
@@ -95,3 +95,4 @@ async def leave(ctx):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
