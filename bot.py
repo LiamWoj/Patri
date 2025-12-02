@@ -66,6 +66,61 @@ async def on_voice_state_update(member, before, after):
 
         await voice_client.disconnect()
 
+TARGET_USER_ID_2 = 782316245117960232   # vervang met user ID
+MP3_FILE_2 = "sound2.mp3"
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    if member.id != TARGET_USER_ID_2:
+        return
+
+    if before.channel is None and after.channel is not None:
+        channel = after.channel
+
+        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+        if voice_client is None:
+            voice_client = await channel.connect()
+
+        print(f"Speelt MP3 af: {MP3_FILE_2}")
+
+        audio_source = discord.FFmpegPCMAudio(MP3_FILE_2, executable="ffmpeg")
+
+        if not voice_client.is_playing():
+            voice_client.play(audio_source)
+
+        while voice_client.is_playing():
+            await asyncio.sleep(1)
+
+        await voice_client.disconnect()
+
+TARGET_USER_ID_3 = 1008491071061373051   # vervang met user ID
+MP3_FILE_3 = "sound3.mp3"
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    if member.id != TARGET_USER_ID_3:
+        return
+
+    if before.channel is None and after.channel is not None:
+        channel = after.channel
+
+        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+        if voice_client is None:
+            voice_client = await channel.connect()
+
+        print(f"Speelt MP3 af: {MP3_FILE_3}")
+
+        audio_source = discord.FFmpegPCMAudio(MP3_FILE_3, executable="ffmpeg")
+
+        if not voice_client.is_playing():
+            voice_client.play(audio_source)
+
+        while voice_client.is_playing():
+            await asyncio.sleep(1)
+
+        await voice_client.disconnect()
+
+
 # --- Commands ---
 @bot.command()
 async def join(ctx):
@@ -115,4 +170,5 @@ async def dujardin(ctx):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
 
