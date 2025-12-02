@@ -41,85 +41,59 @@ async def on_message(message):
     await bot.process_commands(message)
 
 # --- Voice join voor specifieke gebruiker ---
-TARGET_USER_ID = 1097126388236030083
-MP3_FILE = "voorbeeld.mp3"
+TARGET_USER_1 = 1097126388236030083
+SOUND_1 = "voorbeeld.mp3"
+
+TARGET_USER_2 = 123456789012345678
+SOUND_2 = "sound2.mp3"
+
+TARGET_USER_3 = 987654321098765432
+SOUND_3 = "sound3.mp3"
 
 @bot.event
 async def on_voice_state_update(member, before, after):
-    if member.id != TARGET_USER_ID:
+    if member.bot:
         return
 
-    if before.channel is None and after.channel is not None:
-        channel = after.channel
-        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+    # -----------------------------------
+    # User 1
+    # -----------------------------------
+    if member.id == TARGET_USER_1:
+        if before.channel is None and after.channel is not None:
+            channel = after.channel
+            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
 
-        if voice_client is None:
-            voice_client = await channel.connect()
+            if voice_client is None:
+                voice_client = await channel.connect()
 
-        audio_source = discord.FFmpegPCMAudio(MP3_FILE, executable="ffmpeg")
+            print(f"Speelt MP3 af: {SOUND_1}")
 
-        if not voice_client.is_playing():
-            voice_client.play(audio_source)
+            audio = discord.FFmpegPCMAudio(SOUND_1, executable="ffmpeg")
+            voice_client.play(audio)
 
-        while voice_client.is_playing():
-            await asyncio.sleep(1)
+            while voice_client.is_playing():
+                await asyncio.sleep(1)
 
-        await voice_client.disconnect()
-
-TARGET_USER_ID_2 = 782316245117960232   # vervang met user ID
-MP3_FILE_2 = "sound2.mp3"
-
-@bot.event
-async def on_voice_state_update(member, before, after):
-    if member.id != TARGET_USER_ID_2:
+            await voice_client.disconnect()
         return
 
-    if before.channel is None and after.channel is not None:
-        channel = after.channel
+    # -----------------------------------
+    # User 2
+    # -----------------------------------
+    if member.id == TARGET_USER_2:
+        if before.channel is None and after.channel is not None:
+            channel = after.channel
+            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
 
-        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-        if voice_client is None:
-            voice_client = await channel.connect()
+            if voice_client is None:
+                voice_client = await channel.connect()
 
-        print(f"Speelt MP3 af: {MP3_FILE_2}")
+            print(f"Speelt MP3 af: {SOUND_2}")
 
-        audio_source = discord.FFmpegPCMAudio(MP3_FILE_2, executable="ffmpeg")
+            audio = discord.FFmpegPCMAudio(SOUND_2, executable="ffmpeg")
+            voice_client.play(audio)
 
-        if not voice_client.is_playing():
-            voice_client.play(audio_source)
-
-        while voice_client.is_playing():
-            await asyncio.sleep(1)
-
-        await voice_client.disconnect()
-
-TARGET_USER_ID_3 = 1008491071061373051   # vervang met user ID
-MP3_FILE_3 = "sound3.mp3"
-
-@bot.event
-async def on_voice_state_update(member, before, after):
-    if member.id != TARGET_USER_ID_3:
-        return
-
-    if before.channel is None and after.channel is not None:
-        channel = after.channel
-
-        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-        if voice_client is None:
-            voice_client = await channel.connect()
-
-        print(f"Speelt MP3 af: {MP3_FILE_3}")
-
-        audio_source = discord.FFmpegPCMAudio(MP3_FILE_3, executable="ffmpeg")
-
-        if not voice_client.is_playing():
-            voice_client.play(audio_source)
-
-        while voice_client.is_playing():
-            await asyncio.sleep(1)
-
-        await voice_client.disconnect()
-
+            while voice_client.is_pl
 
 # --- Commands ---
 @bot.command()
@@ -170,5 +144,6 @@ async def dujardin(ctx):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
