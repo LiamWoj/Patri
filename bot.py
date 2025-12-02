@@ -44,10 +44,10 @@ async def on_message(message):
 TARGET_USER_1 = 1097126388236030083
 SOUND_1 = "voorbeeld.mp3"
 
-TARGET_USER_2 = 123456789012345678
+TARGET_USER_2 = 782316245117960232
 SOUND_2 = "sound2.mp3"
 
-TARGET_USER_3 = 987654321098765432
+TARGET_USER_3 = 1008491071061373051
 SOUND_3 = "sound3.mp3"
 
 @bot.event
@@ -171,6 +171,7 @@ async def dujardin(ctx):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
 
