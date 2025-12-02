@@ -103,7 +103,7 @@ async def dujardin(ctx):
     if voice_client is None:
         voice_client = await channel.connect()
 
-    audio = discord.FFmpegPCMAudio("dujardin.mp3", executable="ffmpeg")
+    audio = discord.FFmpegPCMAudio("voorbeeld.mp3", executable="ffmpeg")
     voice_client.play(audio)
 
     await ctx.send("🎧 *HEY DUJARDIN wordt afgespeeld...*")
@@ -115,3 +115,4 @@ async def dujardin(ctx):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
