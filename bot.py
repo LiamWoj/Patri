@@ -93,7 +93,34 @@ async def on_voice_state_update(member, before, after):
             audio = discord.FFmpegPCMAudio(SOUND_2, executable="ffmpeg")
             voice_client.play(audio)
 
-            while voice_client.is_pl
+            while voice_client.is_playing():
+                await asyncio.sleep(1)
+
+            await voice_client.disconnect()
+        return
+
+    # -----------------------------------
+    # User 3
+    # -----------------------------------
+    if member.id == TARGET_USER_3:
+        if before.channel is None and after.channel is not None:
+            channel = after.channel
+            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+
+            if voice_client is None:
+                voice_client = await channel.connect()
+
+            print(f"Speelt MP3 af: {SOUND_3}")
+
+            audio = discord.FFmpegPCMAudio(SOUND_3, executable="ffmpeg")
+            voice_client.play(audio)
+
+            while voice_client.is_playing():
+                await asyncio.sleep(1)
+
+            await voice_client.disconnect()
+        return
+
 
 # --- Commands ---
 @bot.command()
@@ -144,6 +171,7 @@ async def dujardin(ctx):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
 
