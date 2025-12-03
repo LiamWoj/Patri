@@ -169,8 +169,30 @@ async def dujardin(ctx):
 
     await voice_client.disconnect()
 
+@bot.command()
+async def marco(ctx):
+    if ctx.author.voice is None:
+        await ctx.send("Ga eerst in een voice channel zitten!")
+        return
+
+    channel = ctx.author.voice.channel
+    voice_client = ctx.voice_client
+
+    if voice_client is None:
+        voice_client = await channel.connect()
+
+    audio = discord.FFmpegPCMAudio("marco.mp3", executable="ffmpeg")
+    voice_client.play(audio)
+
+    await ctx.send("🎧 *CIAO MARCO wordt afgespeeld...*")
+
+    while voice_client.is_playing():
+        await asyncio.sleep(1)
+
+    await voice_client.disconnect()
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
 
