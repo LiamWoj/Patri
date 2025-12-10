@@ -80,10 +80,6 @@ async def on_voice_state_update(member, before, after):
             audio = discord.FFmpegPCMAudio(sound, executable="ffmpeg")
             voice_client.play(audio)
 
-            while voice_client.is_playing():
-                await asyncio.sleep(1)
-
-            await voice_client.disconnect()
 
 # --- Slash commands ---
 @tree.command(name="join", description="Laat de bot jouw voice channel joinen.")
@@ -143,7 +139,87 @@ async def marco(interaction: discord.Interaction):
 
     await interaction.response.send_message("🎧 *CIAO MARCO wordt afgespeeld...*")
 
+@tree.command(name="triggerlist", description="Toon alle woorden die triggers hebben.")
+async def triggerlist(interaction: discord.Interaction):
+    lijst = "\n".join(f"**{t}** → {r}" for t, r in TRIGGERS.items())
+    await interaction.response.send_message(f"📜 **Triggerlijst:**\n{lijst}")
+
+@tree.command(name="scheld", description="Laat de bot iemand uitschelden.")
+async def scheld(interaction: discord.Interaction, user: discord.Member):
+    scheldwoorden = [
+        "gij dom varken",
+        "gij achterlijke pangolin",
+        "gij kunt nog geen ei bakken zonder Jeroen Meus te bellen",
+        "ge zijt trager dan een Airfryer van Action",
+        "ik hoop dat ge stikt in een gehaktbal",
+        "ik maak pizza van u gij achterlijke negerin die ge zijt"
+    ]
+    import random
+    await interaction.response.send_message(f"{user.mention} {random.choice(scheldwoorden)}")
+
+@tree.command(name="ufo", description="UFO alert!!!!!")
+async def ufo(interaction: discord.Interaction):
+    await interaction.response.send_message("🛸 *IK ZIE LICHTEN AAN DE HEMEL — DIT IS GEEN VOGEL DIT IS GEEN VLIEGTUIG — DIT IS ABSOLUTE MANIPULATIE VAN DE WEER!!!*")
+
+@tree.command(name="8ball", description="Stel een vraag aan patri die de toekomst kan zien.")
+async def eightball(interaction: discord.Interaction, vraag: str):
+    antwoorden = [
+        "Ja.",
+        "Nee.",
+        "Misschien.",
+        "Vraag het later nog eens.",
+        "Bro… nee.",
+        "Zeer waarschijnlijk."
+    ]
+    import random
+    await interaction.response.send_message(random.choice(antwoorden))
+
+@tree.command(name="kook", description="De bot kookt een gerecht op Siciliaanse wijze.")
+async def kook(interaction: discord.Interaction):
+    lines = [
+        "Ik ben spaghetti aan het maken, GEEN ROOM GEBRUIKEN EH!",
+        "Mamma mia wat een misbaksel van een keuken hier.",
+        "Wie heeft hier weer de pasta kapot gekookt? 8 minuten MAXIMUM!"
+    ]
+    import random
+    await interaction.response.send_message(random.choice(lines))
+
+@tree.command(name="rant", description="Laat de bot volledig flippen.")
+async def rant(interaction: discord.Interaction):
+    rant = (
+        "IK ZEG HET U — DE WEERKAARTEN WORDEN GECONTROLEERD DOOR MIDDEL VAN DE EIFELTOREN VAN JAPAN JOH! "
+        "DE ITALIAANSE KEUKEN WORDT AANGEVALLEN! "
+        "EN JEROEN MEUS IS DAAR DE LEIDER VAN!!!"
+    )
+    await interaction.response.send_message(rant)
+
+@tree.command(name="sus", description="Beschuldig iemand van SUS gedrag.")
+async def sus(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.send_message(f"🚨 {user.mention} gedraagt zich *verdacht*. Ik hou u in het oog. Gij vieze sussy baka")
+
+@tree.command(name="hack", description="Laat patri iemand hacken door middel van zijn spaghetti computer")
+async def hack(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.send_message(f"💻 Hacking {user.name}...\n0% [..........]")
+    await asyncio.sleep(1)
+    await interaction.followup.send("35% [###.......]")
+    await asyncio.sleep(1)
+    await interaction.followup.send("79% [#######...]")
+    await asyncio.sleep(1)
+    await interaction.followup.send("100% [##########] ✔\n**Resultaat:** gebruiker is een achterlijke neger joh ga terug naar u eigen land en pak aub jeroen meus mee!")
+
+@tree.command(name="quote", description="Krijg een inspirerende quote.")
+async def quote(interaction: discord.Interaction):
+    quotes = [
+        "Doe eens niet.",
+        "Het leven is te kort voor slechte pasta.",
+        "Hou uw bek en geniet van de dag.",
+        "Iedereen heeft een brein. Niet iedereen gebruikt het (he Dujardin)"
+    ]
+    import random
+    await interaction.response.send_message(random.choice(quotes))
+
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
