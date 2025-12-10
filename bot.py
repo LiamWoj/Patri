@@ -21,6 +21,10 @@ intents.voice_states = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree
 
+# --- Jouw server voor instant sync ---
+MY_GUILD_ID = 123456789012345678  # <- VERVANG DIT MET JOUW SERVER ID
+MY_GUILD = discord.Object(id=MY_GUILD_ID)
+
 # --- Triggers ---
 TRIGGERS = {
     "patri": "EY ik ben ufoloog en profesioneel siciliaanse kok EN IK HAAT JEROEN MEUS",
@@ -37,6 +41,9 @@ TRIGGERS = {
 # --- Ready event ---
 @bot.event
 async def on_ready():
+    # Direct voor jouw server (instant)
+    await tree.sync(guild=MY_GUILD)
+    # Globaal voor andere servers (kan 5–60 min duren)
     await tree.sync()
     print(f"Bot is online als {bot.user} en slash commands gesynced!")
 
@@ -51,8 +58,6 @@ async def on_message(message):
         if word in content:
             await message.channel.send(response)
             break
-
-# No bot.process_commands needed for slash commands
 
 # --- Voice join sounds ---
 JOIN_SOUNDS = {
@@ -79,7 +84,6 @@ async def on_voice_state_update(member, before, after):
 
             audio = discord.FFmpegPCMAudio(sound, executable="ffmpeg")
             voice_client.play(audio)
-
 
 # --- Slash commands ---
 @tree.command(name="join", description="Laat de bot jouw voice channel joinen.")
@@ -113,13 +117,11 @@ async def dujardin(interaction: discord.Interaction):
 
     channel = interaction.user.voice.channel
     voice_client = interaction.guild.voice_client
-
     if voice_client is None:
         voice_client = await channel.connect()
 
     audio = discord.FFmpegPCMAudio("voorbeeld.mp3", executable="ffmpeg")
     voice_client.play(audio)
-
     await interaction.response.send_message("🎧 *HEY DUJARDIN wordt afgespeeld...*")
 
 @tree.command(name="marco", description="Speel het CIAO MARCO geluid af.")
@@ -130,13 +132,11 @@ async def marco(interaction: discord.Interaction):
 
     channel = interaction.user.voice.channel
     voice_client = interaction.guild.voice_client
-
     if voice_client is None:
         voice_client = await channel.connect()
 
     audio = discord.FFmpegPCMAudio("marco.mp3", executable="ffmpeg")
     voice_client.play(audio)
-
     await interaction.response.send_message("🎧 *CIAO MARCO wordt afgespeeld...*")
 
 @tree.command(name="triggerlist", description="Toon alle woorden die triggers hebben.")
@@ -151,7 +151,7 @@ async def scheld(interaction: discord.Interaction, user: discord.Member):
         "gij achterlijke pangolin",
         "gij kunt nog geen ei bakken zonder Jeroen Meus te bellen",
         "ge zijt trager dan een Airfryer van Action",
-        "ik hoop dat ge stikt in een gehaktbal",
+        "ik hoop dat ge stikt in een gehaktbal", 
         "ik maak pizza van u gij achterlijke negerin die ge zijt"
     ]
     import random
@@ -163,14 +163,7 @@ async def ufo(interaction: discord.Interaction):
 
 @tree.command(name="8ball", description="Stel een vraag aan patri die de toekomst kan zien.")
 async def eightball(interaction: discord.Interaction, vraag: str):
-    antwoorden = [
-        "Ja.",
-        "Nee.",
-        "Misschien.",
-        "Vraag het later nog eens.",
-        "Bro… nee.",
-        "Zeer waarschijnlijk."
-    ]
+    antwoorden = ["Ja.", "Nee.", "Misschien.", "Vraag het later nog eens.", "Bro… nee.", "Zeer waarschijnlijk."]
     import random
     await interaction.response.send_message(random.choice(antwoorden))
 
@@ -205,7 +198,7 @@ async def hack(interaction: discord.Interaction, user: discord.Member):
     await asyncio.sleep(1)
     await interaction.followup.send("79% [#######...]")
     await asyncio.sleep(1)
-    await interaction.followup.send("100% [##########] ✔\n**Resultaat:** gebruiker is een achterlijke neger joh ga terug naar u eigen land en pak aub jeroen meus mee!")
+    await interaction.followup.send("100% [##########] ✔\n**Resultaat:** gebruiker is een achterlijke neger joh ga terug naar uw eigen land!")
 
 @tree.command(name="quote", description="Krijg een inspirerende quote.")
 async def quote(interaction: discord.Interaction):
