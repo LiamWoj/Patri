@@ -35,12 +35,14 @@ TRIGGERS = {
 }
 
 # --- Ready event ---
-@bot.event\async def on_ready():
+@bot.event
+async def on_ready():
     await tree.sync()
     print(f"Bot is online als {bot.user} en slash commands gesynced!")
 
 # --- Message trigger system ---
-@bot.event\async def on_message(message):
+@bot.event
+async def on_message(message):
     if message.author.bot:
         return
 
@@ -59,7 +61,8 @@ JOIN_SOUNDS = {
     1008491071061373051: "sound3.mp3",
 }
 
-@bot.event\async def on_voice_state_update(member, before, after):
+@bot.event
+async def on_voice_state_update(member, before, after):
     if member.bot:
         return
 
@@ -142,8 +145,5 @@ async def marco(interaction: discord.Interaction):
 
 # --- Run bot ---
 bot.run(TOKEN)
-
-
-
 
 
