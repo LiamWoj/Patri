@@ -66,6 +66,19 @@ JOIN_SOUNDS = {
     1008491071061373051: "sound3.mp3",
 }
 
+async def play_sound_and_disconnect(channel, sound):
+    voice_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
+    if voice_client is None:
+        voice_client = await channel.connect()
+
+    audio = discord.FFmpegPCMAudio(sound, executable="ffmpeg")
+    voice_client.play(audio)
+
+    while voice_client.is_playing():
+        await asyncio.sleep(1)
+
+    await voice_client.disconnect()
+
 @bot.event
 async def on_voice_state_update(member, before, after):
     if member.bot:
@@ -73,17 +86,9 @@ async def on_voice_state_update(member, before, after):
 
     if member.id in JOIN_SOUNDS:
         if before.channel is None and after.channel is not None:
-            channel = after.channel
-            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-
-            if voice_client is None:
-                voice_client = await channel.connect()
-
             sound = JOIN_SOUNDS[member.id]
             print(f"Speelt MP3 af: {sound}")
-
-            audio = discord.FFmpegPCMAudio(sound, executable="ffmpeg")
-            voice_client.play(audio)
+            await play_sound_and_disconnect(after.channel, sound)
 
 # --- Slash commands ---
 @tree.command(name="join", description="Laat de bot jouw voice channel joinen.")
@@ -116,12 +121,7 @@ async def dujardin(interaction: discord.Interaction):
         return
 
     channel = interaction.user.voice.channel
-    voice_client = interaction.guild.voice_client
-    if voice_client is None:
-        voice_client = await channel.connect()
-
-    audio = discord.FFmpegPCMAudio("voorbeeld.mp3", executable="ffmpeg")
-    voice_client.play(audio)
+    await play_sound_and_disconnect(channel, "voorbeeld.mp3")
     await interaction.response.send_message("🎧 *HEY DUJARDIN wordt afgespeeld...*")
 
 @tree.command(name="marco", description="Speel het CIAO MARCO geluid af.")
@@ -131,14 +131,10 @@ async def marco(interaction: discord.Interaction):
         return
 
     channel = interaction.user.voice.channel
-    voice_client = interaction.guild.voice_client
-    if voice_client is None:
-        voice_client = await channel.connect()
-
-    audio = discord.FFmpegPCMAudio("marco.mp3", executable="ffmpeg")
-    voice_client.play(audio)
+    await play_sound_and_disconnect(channel, "marco.mp3")
     await interaction.response.send_message("🎧 *CIAO MARCO wordt afgespeeld...*")
 
+# --- De rest van de slash commands blijven exact hetzelfde ---
 @tree.command(name="triggerlist", description="Toon alle woorden die triggers hebben.")
 async def triggerlist(interaction: discord.Interaction):
     lijst = "\n".join(f"**{t}** → {r}" for t, r in TRIGGERS.items())
@@ -213,7 +209,5 @@ async def quote(interaction: discord.Interaction):
 
 # --- Run bot ---
 bot.run(TOKEN)
-
-
 
 
