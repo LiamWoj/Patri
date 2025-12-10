@@ -3,6 +3,7 @@ import asyncio
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
+from discord import app_commands
 
 # --- Load token ---
 load_dotenv()
@@ -18,23 +19,28 @@ intents.messages = True
 intents.voice_states = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
+tree = bot.tree
 
+# --- Triggers ---
 TRIGGERS = {
     "patri": "EY ik ben ufoloog en profesioneel siciliaanse kok EN IK HAAT JEROEN MEUS",
     "lucht": "MANIPULATIE VAN DE WEER!",
     "wk": "TIJD VOOR HET WK OHHHH WAT SPANNEND!",
     "dujardin": "HEY DUJARDIN!",
-    "BRRRAAA": "EY!",
+    "brraaa": "EY!",
     "jeroen": "JEROEN MEUS VERNEUKT DE ITALIAANSE KEUKEN DIE VUILE SMEERLAP",
     "jorrit": "JO JO JO JORIT DOM JORIT DOM DOM",
-    "nigga": "NEGERS????!!!!!!", 
-    "Max": "Max verstappen is de goat",
-    
+    "nigga": "NEGERS????!!!!!!",
+    "max": "Max verstappen is de goat",
 }
 
-# --- Event: Reageer op berichten ---
-@bot.event
-async def on_message(message):
+# --- Ready event ---
+@bot.event\async def on_ready():
+    await tree.sync()
+    print(f"Bot is online als {bot.user} en slash commands gesynced!")
+
+# --- Message trigger system ---
+@bot.event\async def on_message(message):
     if message.author.bot:
         return
 
@@ -44,27 +50,20 @@ async def on_message(message):
             await message.channel.send(response)
             break
 
-    await bot.process_commands(message)
+# No bot.process_commands needed for slash commands
 
-# --- Voice join voor specifieke gebruiker ---
-TARGET_USER_1 = 1097126388236030083
-SOUND_1 = "voorbeeld.mp3"
+# --- Voice join sounds ---
+JOIN_SOUNDS = {
+    1097126388236030083: "voorbeeld.mp3",
+    782316245117960232: "sound2.mp3",
+    1008491071061373051: "sound3.mp3",
+}
 
-TARGET_USER_2 = 782316245117960232
-SOUND_2 = "sound2.mp3"
-
-TARGET_USER_3 = 1008491071061373051
-SOUND_3 = "sound3.mp3"
-
-@bot.event
-async def on_voice_state_update(member, before, after):
+@bot.event\async def on_voice_state_update(member, before, after):
     if member.bot:
         return
 
-    # -----------------------------------
-    # User 1
-    # -----------------------------------
-    if member.id == TARGET_USER_1:
+    if member.id in JOIN_SOUNDS:
         if before.channel is None and after.channel is not None:
             channel = after.channel
             voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
@@ -72,95 +71,49 @@ async def on_voice_state_update(member, before, after):
             if voice_client is None:
                 voice_client = await channel.connect()
 
-            print(f"Speelt MP3 af: {SOUND_1}")
+            sound = JOIN_SOUNDS[member.id]
+            print(f"Speelt MP3 af: {sound}")
 
-            audio = discord.FFmpegPCMAudio(SOUND_1, executable="ffmpeg")
+            audio = discord.FFmpegPCMAudio(sound, executable="ffmpeg")
             voice_client.play(audio)
 
             while voice_client.is_playing():
                 await asyncio.sleep(1)
 
             await voice_client.disconnect()
+
+# --- Slash commands ---
+@tree.command(name="join", description="Laat de bot jouw voice channel joinen.")
+async def join(interaction: discord.Interaction):
+    if interaction.user.voice is None:
+        await interaction.response.send_message("Je moet eerst in een voice channel zitten gij kalf!")
         return
 
-    # -----------------------------------
-    # User 2
-    # -----------------------------------
-    if member.id == TARGET_USER_2:
-        if before.channel is None and after.channel is not None:
-            channel = after.channel
-            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-
-            if voice_client is None:
-                voice_client = await channel.connect()
-
-            print(f"Speelt MP3 af: {SOUND_2}")
-
-            audio = discord.FFmpegPCMAudio(SOUND_2, executable="ffmpeg")
-            voice_client.play(audio)
-
-            while voice_client.is_playing():
-                await asyncio.sleep(1)
-
-            await voice_client.disconnect()
-        return
-
-    # -----------------------------------
-    # User 3
-    # -----------------------------------
-    if member.id == TARGET_USER_3:
-        if before.channel is None and after.channel is not None:
-            channel = after.channel
-            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-
-            if voice_client is None:
-                voice_client = await channel.connect()
-
-            print(f"Speelt MP3 af: {SOUND_3}")
-
-            audio = discord.FFmpegPCMAudio(SOUND_3, executable="ffmpeg")
-            voice_client.play(audio)
-
-            while voice_client.is_playing():
-                await asyncio.sleep(1)
-
-            await voice_client.disconnect()
-        return
-
-
-# --- Commands ---
-@bot.command()
-async def join(ctx):
-    if ctx.author.voice is None:
-        await ctx.send("Je moet eerst in een voice channel zitten!")
-        return
-
-    channel = ctx.author.voice.channel
-    voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    channel = interaction.user.voice.channel
+    voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
 
     if voice_client is None:
         await channel.connect()
-        await ctx.send(f"Joined {channel.name}!")
+        await interaction.response.send_message(f"Joined {channel.name}!")
     else:
-        await ctx.send("Ik ben al verbonden in een voice channel!")
+        await interaction.response.send_message("Ik ben al verbonden in een voice channel eh kalf!")
 
-@bot.command()
-async def leave(ctx):
-    if ctx.voice_client is not None:
-        await ctx.voice_client.disconnect()
-        await ctx.send("Bye! 👋")
+@tree.command(name="leave", description="Laat de bot de voice channel verlaten.")
+async def leave(interaction: discord.Interaction):
+    if interaction.guild.voice_client is not None:
+        await interaction.guild.voice_client.disconnect()
+        await interaction.response.send_message("CIAO CIAO ")
     else:
-        await ctx.send("Ik zit nergens in een voice channel.")
+        await interaction.response.send_message("Ik zit nergens in een voice channel eh kalf.")
 
-# --- Nieuw: !dujardin command ---
-@bot.command()
-async def dujardin(ctx):
-    if ctx.author.voice is None:
-        await ctx.send("Ga eerst in een voice channel zitten!")
+@tree.command(name="dujardin", description="Speel het HEY DUJARDIN geluid af.")
+async def dujardin(interaction: discord.Interaction):
+    if interaction.user.voice is None:
+        await interaction.response.send_message("Ga eerst in een voice channel zitten!")
         return
 
-    channel = ctx.author.voice.channel
-    voice_client = ctx.voice_client
+    channel = interaction.user.voice.channel
+    voice_client = interaction.guild.voice_client
 
     if voice_client is None:
         voice_client = await channel.connect()
@@ -168,21 +121,16 @@ async def dujardin(ctx):
     audio = discord.FFmpegPCMAudio("voorbeeld.mp3", executable="ffmpeg")
     voice_client.play(audio)
 
-    await ctx.send("🎧 *HEY DUJARDIN wordt afgespeeld...*")
+    await interaction.response.send_message("🎧 *HEY DUJARDIN wordt afgespeeld...*")
 
-    while voice_client.is_playing():
-        await asyncio.sleep(1)
-
-    await voice_client.disconnect()
-
-@bot.command()
-async def marco(ctx):
-    if ctx.author.voice is None:
-        await ctx.send("Ga eerst in een voice channel zitten!")
+@tree.command(name="marco", description="Speel het CIAO MARCO geluid af.")
+async def marco(interaction: discord.Interaction):
+    if interaction.user.voice is None:
+        await interaction.response.send_message("Ga eerst in een voice channel zitten eh kalf!")
         return
 
-    channel = ctx.author.voice.channel
-    voice_client = ctx.voice_client
+    channel = interaction.user.voice.channel
+    voice_client = interaction.guild.voice_client
 
     if voice_client is None:
         voice_client = await channel.connect()
@@ -190,16 +138,10 @@ async def marco(ctx):
     audio = discord.FFmpegPCMAudio("marco.mp3", executable="ffmpeg")
     voice_client.play(audio)
 
-    await ctx.send("🎧 *CIAO MARCO wordt afgespeeld...*")
+    await interaction.response.send_message("🎧 *CIAO MARCO wordt afgespeeld...*")
 
-    while voice_client.is_playing():
-        await asyncio.sleep(1)
-
-    await voice_client.disconnect()
 # --- Run bot ---
 bot.run(TOKEN)
-
-
 
 
 
