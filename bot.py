@@ -88,7 +88,8 @@ async def on_voice_state_update(member, before, after):
         if before.channel is None and after.channel is not None:
             sound = JOIN_SOUNDS[member.id]
             print(f"Speelt MP3 af: {sound}")
-            await play_sound_and_disconnect(after.channel, sound)
+            # audio op achtergrond, interactie is niet geblokkeerd
+            asyncio.create_task(play_sound_and_disconnect(after.channel, sound))
 
 # --- Slash commands ---
 @tree.command(name="join", description="Laat de bot jouw voice channel joinen.")
@@ -120,9 +121,9 @@ async def dujardin(interaction: discord.Interaction):
         await interaction.response.send_message("Ga eerst in een voice channel zitten!")
         return
 
-    channel = interaction.user.voice.channel
-    await play_sound_and_disconnect(channel, "voorbeeld.mp3")
     await interaction.response.send_message("🎧 *HEY DUJARDIN wordt afgespeeld...*")
+    channel = interaction.user.voice.channel
+    asyncio.create_task(play_sound_and_disconnect(channel, "voorbeeld.mp3"))
 
 @tree.command(name="marco", description="Speel het CIAO MARCO geluid af.")
 async def marco(interaction: discord.Interaction):
@@ -130,9 +131,9 @@ async def marco(interaction: discord.Interaction):
         await interaction.response.send_message("Ga eerst in een voice channel zitten eh kalf!")
         return
 
-    channel = interaction.user.voice.channel
-    await play_sound_and_disconnect(channel, "marco.mp3")
     await interaction.response.send_message("🎧 *CIAO MARCO wordt afgespeeld...*")
+    channel = interaction.user.voice.channel
+    asyncio.create_task(play_sound_and_disconnect(channel, "marco.mp3"))
 
 # --- De rest van de slash commands blijven exact hetzelfde ---
 @tree.command(name="triggerlist", description="Toon alle woorden die triggers hebben.")
@@ -209,5 +210,3 @@ async def quote(interaction: discord.Interaction):
 
 # --- Run bot ---
 bot.run(TOKEN)
-
-
