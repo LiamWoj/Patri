@@ -20,10 +20,16 @@ intents.voice_states = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 TRIGGERS = {
-    "patri": "EY MAMA MIA",
+    "patri": "EY ik ben ufoloog en profesioneel siciliaanse kok EN IK HAAT JEROEN MEUS",
     "lucht": "MANIPULATIE VAN DE WEER!",
     "wk": "TIJD VOOR HET WK OHHHH WAT SPANNEND!",
     "dujardin": "HEY DUJARDIN!",
+    "BRRRAAA": "EY!",
+    "jeroen": "JEROEN MEUS VERNEUKT DE ITALIAANSE KEUKEN DIE VUILE SMEERLAP",
+    "jorrit": "JO JO JO JORIT DOM JORIT DOM DOM",
+    "nigga": "NEGERS????!!!!!!", 
+    "Max": "Max verstappen is de goat",
+    
 }
 
 # --- Event: Reageer op berichten ---
@@ -192,6 +198,7 @@ async def marco(ctx):
     await voice_client.disconnect()
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
 
