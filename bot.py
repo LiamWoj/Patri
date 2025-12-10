@@ -22,7 +22,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree
 
 # --- Jouw server voor instant sync ---
-MY_GUILD_ID = 123456789012345678  # <- VERVANG DIT MET JOUW SERVER ID
+MY_GUILD_ID = 1444812723916374160  # <- VERVANG DIT MET JOUW SERVER ID
 MY_GUILD = discord.Object(id=MY_GUILD_ID)
 
 # --- Triggers ---
@@ -213,6 +213,7 @@ async def quote(interaction: discord.Interaction):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
 
 
 
