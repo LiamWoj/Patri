@@ -63,7 +63,7 @@ async def on_message(message):
 JOIN_SOUNDS = {
     1097126388236030083: "voorbeeld.mp3",
     782316245117960232: "sound4.mp3",
-    1008491071061373051: "sound3.mp3",
+    1008491071061373051: "Dujardin_messy_by_Mauro_Geuns.mp3",
 }
 
 async def play_sound_and_disconnect(channel, sound):
@@ -210,4 +210,5 @@ async def quote(interaction: discord.Interaction):
 
 # --- Run bot ---
 bot.run(TOKEN)
+
 
